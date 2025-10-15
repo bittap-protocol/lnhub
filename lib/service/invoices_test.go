@@ -3,8 +3,8 @@ package service
 import (
 	"testing"
 
-	"github.com/getAlby/lndhub.go/db/models"
-	"github.com/getAlby/lndhub.go/lnd"
+	"github.com/bittap-protocol/lnhub/db/models"
+	"github.com/bittap-protocol/lnhub/lnd"
 	"github.com/stretchr/testify/assert"
 )
 

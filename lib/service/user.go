@@ -7,11 +7,11 @@ import (
 	"math"
 	"time"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/db/models"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/security"
-	"github.com/getAlby/lndhub.go/lnd"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/db/models"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/security"
+	"github.com/bittap-protocol/lnhub/lnd"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	"github.com/uptrace/bun"
@@ -133,7 +133,7 @@ func (svc *LndhubService) FindUserByLogin(ctx context.Context, login string) (*m
 	return &user, nil
 }
 
-func (svc *LndhubService) CheckOutgoingPaymentAllowed(c echo.Context, lnpayReq *lnd.LNPayReq, userId int64) (result *responses.ErrorResponse, err error) {
+func (svc *LndhubService) CheckOutgoingPaymentAllowed(c echo.Context, lnpayReq *lnd.LNPayReq, assetId string, userId int64) (result *responses.ErrorResponse, err error) {
 	limits := svc.GetLimits(c)
 	if limits.MaxSendAmount >= 0 {
 		if lnpayReq.PayReq.NumSatoshis > limits.MaxSendAmount {
@@ -175,7 +175,7 @@ func (svc *LndhubService) CheckOutgoingPaymentAllowed(c echo.Context, lnpayReq *
 		}
 	}
 
-	currentBalance, err := svc.CurrentUserBalance(c.Request().Context(), userId)
+	currentBalance, err := svc.CurrentUserBalance(c.Request().Context(), assetId, userId)
 	if err != nil {
 		svc.Logger.Errorj(
 			log.JSON{
@@ -201,7 +201,7 @@ func (svc *LndhubService) CheckOutgoingPaymentAllowed(c echo.Context, lnpayReq *
 	return nil, nil
 }
 
-func (svc *LndhubService) CheckIncomingPaymentAllowed(c echo.Context, amount, userId int64) (result *responses.ErrorResponse, err error) {
+func (svc *LndhubService) CheckIncomingPaymentAllowed(c echo.Context, amount int64, assetId string, userId int64) (result *responses.ErrorResponse, err error) {
 	limits := svc.GetLimits(c)
 	if limits.MaxReceiveAmount >= 0 {
 		if amount > limits.MaxReceiveAmount {
@@ -244,7 +244,7 @@ func (svc *LndhubService) CheckIncomingPaymentAllowed(c echo.Context, amount, us
 	}
 
 	if limits.MaxAccountBalance >= 0 {
-		currentBalance, err := svc.CurrentUserBalance(c.Request().Context(), userId)
+		currentBalance, err := svc.CurrentUserBalance(c.Request().Context(), assetId, userId)
 		if err != nil {
 			svc.Logger.Errorj(
 				log.JSON{
@@ -295,10 +295,40 @@ func (svc *LndhubService) CalcFeeLimit(destination string, amount int64) int64 {
 	return limit
 }
 
-func (svc *LndhubService) CurrentUserBalance(ctx context.Context, userId int64) (int64, error) {
+func (svc *LndhubService) CurrentUserBalanceByAsset(ctx context.Context, userId int64) (map[string]int64, error) {
+	//balanceMsg := "balances: "
+	balances := make(map[string]int64)
+	accounts, err := svc.AccountsFor(ctx, common.AccountTypeCurrent, userId)
+	if err != nil {
+		return nil, err
+	}
+	for _, account := range accounts {
+		var balance int64
+		err = svc.DB.NewSelect().Table("account_ledgers").ColumnExpr("sum(account_ledgers.amount) as balance").Where("account_ledgers.account_id = ?", account.ID).Scan(ctx, &balance)
+		if err != nil {
+			return nil, err
+		}
+		balances[account.Asset.AssetName] = balance
+		// append to message
+		//balanceMsg = balanceMsg + fmt.Sprintf("%s %d,", account.TaAssetID, balance)
+	}
+	return balances, nil
+}
+
+func (svc *LndhubService) CurrentUserBalanceForAsset(ctx context.Context, assetId string, userId int64) (int64, error) {
+	var balance int64
+	account, err := svc.AccountFor(ctx, common.AccountTypeCurrent, assetId, userId)
+	if err != nil {
+		return balance, err
+	}
+	err = svc.DB.NewSelect().Table("account_ledgers").ColumnExpr("sum(account_ledgers.amount) as balance").Where("account_ledgers.account_id = ?", account.ID).Where("account_ledgers.asset_id = ?", assetId).Scan(ctx, &balance)
+	return balance, err
+}
+
+func (svc *LndhubService) CurrentUserBalance(ctx context.Context, assetId string, userId int64) (int64, error) {
 	var balance int64
 
-	account, err := svc.AccountFor(ctx, common.AccountTypeCurrent, userId)
+	account, err := svc.AccountFor(ctx, common.AccountTypeCurrent, assetId, userId)
 	if err != nil {
 		return balance, err
 	}
@@ -306,10 +336,22 @@ func (svc *LndhubService) CurrentUserBalance(ctx context.Context, userId int64) 
 	return balance, err
 }
 
-func (svc *LndhubService) AccountFor(ctx context.Context, accountType string, userId int64) (models.Account, error) {
+func (svc *LndhubService) AccountFor(ctx context.Context, accountType string, assetId string, userId int64) (models.Account, error) {
 	account := models.Account{}
-	err := svc.DB.NewSelect().Model(&account).Where("user_id = ? AND type= ?", userId, accountType).Limit(1).Scan(ctx)
+	err := svc.DB.NewSelect().Model(&account).Where("user_id = ? AND account.asset_id = ? AND type= ?", userId, assetId, accountType).Relation("Asset").Limit(1).Scan(ctx)
 	return account, err
+}
+
+func (svc *LndhubService) AccountForInTx(ctx context.Context, tx bun.Tx, accountType string, assetId string, userId int64) (models.Account, error) {
+	account := models.Account{}
+	err := tx.NewSelect().Model(&account).Where("user_id = ? AND account.asset_id = ? AND type= ?", userId, assetId, accountType).Relation("Asset").Limit(1).Scan(ctx)
+	return account, err
+}
+
+func (svc *LndhubService) AccountsFor(ctx context.Context, accountType string, userId int64) ([]models.Account, error) {
+	accounts := []models.Account{}
+	err := svc.DB.NewSelect().Model(&accounts).Where("user_id = ? AND type = ?", userId, accountType).Relation("Asset").Scan(ctx)
+	return accounts, err
 }
 
 func (svc *LndhubService) TransactionEntriesFor(ctx context.Context, userId int64) ([]models.TransactionEntry, error) {

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/getAlby/lndhub.go/lib/service"
+	"github.com/bittap-protocol/lnhub/lib/service"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"

@@ -10,18 +10,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/getAlby/lndhub.go/lnd"
-	"github.com/getAlby/lndhub.go/rabbitmq"
+	"github.com/bittap-protocol/lnhub/lnd"
+	"github.com/bittap-protocol/lnhub/rabbitmq"
 	ddEcho "gopkg.in/DataDog/dd-trace-go.v1/contrib/labstack/echo.v4"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 
-	"github.com/getAlby/lndhub.go/db"
-	"github.com/getAlby/lndhub.go/db/migrations"
-	"github.com/getAlby/lndhub.go/docs"
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/service"
-	"github.com/getAlby/lndhub.go/lib/tokens"
-	"github.com/getAlby/lndhub.go/lib/transport"
+	"github.com/bittap-protocol/lnhub/db"
+	"github.com/bittap-protocol/lnhub/db/migrations"
+	"github.com/bittap-protocol/lnhub/docs"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/service"
+	"github.com/bittap-protocol/lnhub/lib/tokens"
+	"github.com/bittap-protocol/lnhub/lib/transport"
 	"github.com/getsentry/sentry-go"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -158,6 +158,7 @@ func main() {
 
 	transport.RegisterLegacyEndpoints(svc, e, secured, securedWithStrictRateLimit, strictRateLimitMiddleware, tokens.AdminTokenMiddleware(c.AdminToken), logMw)
 	transport.RegisterV2Endpoints(svc, e, secured, securedWithStrictRateLimit, strictRateLimitMiddleware, tokens.AdminTokenMiddleware(c.AdminToken), logMw)
+	transport.RegisterTapEndpoints(svc, e, secured, securedWithStrictRateLimit, strictRateLimitMiddleware, tokens.AdminTokenMiddleware(c.AdminToken), logMw)
 
 	//Swagger API spec
 	docs.SwaggerInfo.Host = c.Host

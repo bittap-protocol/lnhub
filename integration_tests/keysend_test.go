@@ -11,12 +11,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/getAlby/lndhub.go/controllers"
-	v2controllers "github.com/getAlby/lndhub.go/controllers_v2"
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
-	"github.com/getAlby/lndhub.go/lib/tokens"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/controllers"
+	v2controllers "github.com/bittap-protocol/lnhub/controllers_v2"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
+	"github.com/bittap-protocol/lnhub/lib/tokens"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -93,7 +94,7 @@ func (suite *KeySendTestSuite) TestKeysendPayment() {
 	suite.createKeySendReq(int64(externalSatRequested), "key send test", "123456789012345678901234567890123456789012345678901234567890abcdef", suite.aliceToken)
 	// check that balance was reduced
 	userId := getUserIdFromToken(suite.aliceToken)
-	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), userId)
+	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}
@@ -196,7 +197,7 @@ func (suite *KeySendTestSuite) TestMultiKeysend() {
 	assert.Equal(suite.T(), len(keySendResponse.Keysends), 3)
 	//check that balance was reduced appropriately
 	userId := getUserIdFromToken(suite.aliceToken)
-	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), userId)
+	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}

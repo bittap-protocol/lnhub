@@ -3,8 +3,9 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
@@ -61,7 +62,7 @@ func AddInvoice(c echo.Context, svc *service.LndhubService, userID int64) error 
 		return c.JSON(http.StatusBadRequest, responses.BadArgumentsError)
 	}
 
-	resp, err := svc.CheckIncomingPaymentAllowed(c, amount, userID)
+	resp, err := svc.CheckIncomingPaymentAllowed(c, amount, common.BTC_ASSET_ID, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, responses.GeneralServerError)
 	}

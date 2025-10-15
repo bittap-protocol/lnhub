@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/getAlby/lndhub.go/db/models"
+	"github.com/bittap-protocol/lnhub/db/models"
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
 	"github.com/golang-jwt/jwt"

@@ -3,8 +3,8 @@ package transport
 import (
 	"net/http"
 
-	"github.com/getAlby/lndhub.go/controllers"
-	"github.com/getAlby/lndhub.go/lib/service"
+	"github.com/bittap-protocol/lnhub/controllers"
+	"github.com/bittap-protocol/lnhub/lib/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"

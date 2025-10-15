@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
-	"github.com/getAlby/lndhub.go/lnd"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
+	"github.com/bittap-protocol/lnhub/lnd"
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -75,7 +75,7 @@ func (controller *KeySendController) KeySend(c echo.Context) error {
 		})
 	}
 
-	resp, err := controller.svc.CheckOutgoingPaymentAllowed(c, lnPayReq, userID)
+	resp, err := controller.svc.CheckOutgoingPaymentAllowed(c, lnPayReq, common.BTC_ASSET_ID, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, responses.GeneralServerError)
 	}
@@ -110,10 +110,10 @@ func (controller *KeySendController) KeySend(c echo.Context) error {
 	if err != nil {
 		c.Logger().Errorj(
 			log.JSON{
-				"message": 	"payment failed",
-				"error": err,
-				"lndhub_user_id": userID,
-				"invoice_id": invoice.ID,
+				"message":                "payment failed",
+				"error":                  err,
+				"lndhub_user_id":         userID,
+				"invoice_id":             invoice.ID,
 				"destination_pubkey_hex": invoice.DestinationPubkeyHex,
 			},
 		)

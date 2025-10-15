@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
@@ -140,12 +140,14 @@ func (controller *InvoiceController) GetIncomingInvoices(c echo.Context) error {
 
 type AddInvoiceRequestBody struct {
 	Amount          int64  `json:"amount" validate:"gte=0"`
+	AssetId         string `json:"asset_id"`
 	Description     string `json:"description"`
 	DescriptionHash string `json:"description_hash" validate:"omitempty,hexadecimal,len=64"`
 }
 
 type AddInvoiceResponseBody struct {
 	PaymentHash    string    `json:"payment_hash"`
+	AssetId        string    `json:"asset_id"`
 	PaymentRequest string    `json:"payment_request"`
 	ExpiresAt      time.Time `json:"expires_at"`
 	CreatedAt      time.Time `json:"created_at"`
@@ -177,7 +179,7 @@ func (controller *InvoiceController) AddInvoice(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, responses.BadArgumentsError)
 	}
 
-	resp, err := controller.svc.CheckIncomingPaymentAllowed(c, body.Amount, userID)
+	resp, err := controller.svc.CheckIncomingPaymentAllowed(c, body.Amount, body.AssetId, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, responses.GeneralServerError)
 	}

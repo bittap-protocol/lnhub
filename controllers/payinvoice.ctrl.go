@@ -6,10 +6,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
-	"github.com/getAlby/lndhub.go/lnd"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
+	"github.com/bittap-protocol/lnhub/lnd"
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
 	"github.com/labstack/echo/v4"
@@ -90,7 +91,7 @@ func (controller *PayInvoiceController) PayInvoice(c echo.Context) error {
 		lnPayReq.PayReq.NumSatoshis = amt
 	}
 
-	resp, err := controller.svc.CheckOutgoingPaymentAllowed(c, lnPayReq, userID)
+	resp, err := controller.svc.CheckOutgoingPaymentAllowed(c, lnPayReq, common.BTC_ASSET_ID, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, responses.GeneralServerError)
 	}
@@ -106,11 +107,11 @@ func (controller *PayInvoiceController) PayInvoice(c echo.Context) error {
 	sendPaymentResponse, err := controller.svc.PayInvoice(c.Request().Context(), invoice)
 	if err != nil {
 		c.Logger().Errorj(
-				log.JSON{
-				"message": 	"payment failed",
-				"error": err,
-				"lndhub_user_id": userID,
-				"invoice_id": invoice.ID,
+			log.JSON{
+				"message":                "payment failed",
+				"error":                  err,
+				"lndhub_user_id":         userID,
+				"invoice_id":             invoice.ID,
 				"destination_pubkey_hex": invoice.DestinationPubkeyHex,
 			},
 		)

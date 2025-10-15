@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/db/models"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/db/models"
 )
 
 func (svc *LndhubService) StartWebhookSubscription(ctx context.Context, url string) {

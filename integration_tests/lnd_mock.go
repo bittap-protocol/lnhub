@@ -9,11 +9,12 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/bittap-protocol/lnhub/lnd"
 	btcec "github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcec/v2/ecdsa"
 	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/getAlby/lndhub.go/lnd"
 	"github.com/labstack/gommon/random"
+	"github.com/lightningnetwork/lnd/fn/v2"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	"github.com/lightningnetwork/lnd/lnwire"
@@ -49,7 +50,7 @@ func NewMockLND(privkey string, fee int64, invoiceChan chan (*lnrpc.Invoice)) (*
 
 func (mlnd *MockLND) signMsg(msg []byte) ([]byte, error) {
 	hash := sha256.Sum256(msg)
-	return ecdsa.SignCompact(mlnd.privKey, hash[:], true)
+	return ecdsa.SignCompact(mlnd.privKey, hash[:], true), nil
 }
 
 type MockSubscribeInvoices struct {
@@ -96,7 +97,6 @@ func (mlnd *MockLND) AddInvoice(ctx context.Context, req *lnrpc.Invoice, options
 		MilliSat:    &msat,
 		Timestamp:   time.Now(),
 		PaymentHash: &[32]byte{},
-		PaymentAddr: &[32]byte{},
 		Features: &lnwire.FeatureVector{
 			RawFeatureVector: &lnwire.RawFeatureVector{},
 		},
@@ -104,7 +104,13 @@ func (mlnd *MockLND) AddInvoice(ctx context.Context, req *lnrpc.Invoice, options
 	}
 	zpay32.Expiry(time.Duration(req.Expiry))(invoice)
 	copy(invoice.PaymentHash[:], pHash.Sum(nil))
-	copy(invoice.PaymentAddr[:], req.PaymentAddr)
+
+	if len(req.PaymentAddr) == 32 {
+		var bCopy [32]byte
+		copy(bCopy[:], req.PaymentAddr[:32])
+		invoice.PaymentAddr = fn.Some[[32]byte](bCopy)
+	}
+
 	if len(req.DescriptionHash) != 0 {
 		invoice.DescriptionHash = &[32]byte{}
 		copy(req.DescriptionHash, invoice.DescriptionHash[:])

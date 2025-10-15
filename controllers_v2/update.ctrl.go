@@ -3,8 +3,8 @@ package v2controllers
 import (
 	"net/http"
 
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
 	"github.com/labstack/echo/v4"
 )
 

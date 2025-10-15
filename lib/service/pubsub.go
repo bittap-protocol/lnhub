@@ -3,7 +3,7 @@ package service
 import (
 	"sync"
 
-	"github.com/getAlby/lndhub.go/db/models"
+	"github.com/bittap-protocol/lnhub/db/models"
 )
 
 // This should give enough space to allow for some spike in traffic without flooding memory to much.

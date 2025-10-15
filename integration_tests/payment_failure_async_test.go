@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/controllers"
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
-	"github.com/getAlby/lndhub.go/lib/tokens"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/controllers"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
+	"github.com/bittap-protocol/lnhub/lib/tokens"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/lightningnetwork/lnd/lnrpc"
@@ -101,7 +101,7 @@ func (suite *PaymentTestAsyncErrorsSuite) TestExternalAsyncFailingInvoice() {
 
 	// check to see that balance was reduced
 	userId := getUserIdFromToken(suite.userToken)
-	userBalance, err := suite.service.CurrentUserBalance(context.Background(), userId)
+	userBalance, err := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}
@@ -113,7 +113,7 @@ func (suite *PaymentTestAsyncErrorsSuite) TestExternalAsyncFailingInvoice() {
 	time.Sleep(2 * time.Second)
 
 	// check that balance was reverted and invoice is in error state
-	userBalance, err = suite.service.CurrentUserBalance(context.Background(), userId)
+	userBalance, err = suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}

@@ -9,9 +9,9 @@ import (
 
 	cache "github.com/SporkHubr/echo-http-cache"
 	"github.com/SporkHubr/echo-http-cache/adapter/memory"
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
 	sentryecho "github.com/getsentry/sentry-go/echo"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo-contrib/prometheus"
@@ -81,7 +81,7 @@ func CreateRateLimitMiddleware(requestsPerSecond int, burst int) echo.Middleware
 			res := responses.TooManyRequestsError
 			return context.JSON(res.HttpStatusCode, res)
 		},
-		DenyHandler: func(context echo.Context, identifier string,err error) error {
+		DenyHandler: func(context echo.Context, identifier string, err error) error {
 			res := responses.TooManyRequestsError
 			return context.JSON(res.HttpStatusCode, res)
 		},

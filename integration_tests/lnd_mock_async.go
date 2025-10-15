@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/getAlby/lndhub.go/lnd"
+	"github.com/bittap-protocol/lnhub/lnd"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"google.golang.org/grpc"
 )

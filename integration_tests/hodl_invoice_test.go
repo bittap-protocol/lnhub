@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/controllers"
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
-	"github.com/getAlby/lndhub.go/lib/tokens"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/controllers"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
+	"github.com/bittap-protocol/lnhub/lib/tokens"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/lightningnetwork/lnd/lnrpc"
@@ -105,7 +105,7 @@ func (suite *HodlInvoiceSuite) TestHodlInvoice() {
 
 	// check to see that balance was reduced
 	userId := getUserIdFromToken(suite.userToken)
-	userBalance, err := suite.service.CurrentUserBalance(context.Background(), userId)
+	userBalance, err := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}
@@ -146,7 +146,7 @@ func (suite *HodlInvoiceSuite) TestHodlInvoice() {
 	time.Sleep(time.Second)
 
 	// check that balance was reverted and invoice is in error state
-	userBalance, err = suite.service.CurrentUserBalance(context.Background(), userId)
+	userBalance, err = suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}
@@ -225,7 +225,7 @@ func (suite *HodlInvoiceSuite) TestHodlInvoice() {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}
 	//fetch user balance again
-	userBalance, err = suite.service.CurrentUserBalance(context.Background(), userId)
+	userBalance, err = suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	assert.NoError(suite.T(), err)
 	assert.Equal(suite.T(), int64(userFundingSats-externalSatRequested), userBalance)
 	// check payment is updated as succesful
@@ -316,7 +316,7 @@ func (suite *HodlInvoiceSuite) TestNegativeBalanceWithHodl() {
 		FailureReason:   0,
 	})
 	//fetch user balance again
-	userBalance, err := suite.service.CurrentUserBalance(context.Background(), userId)
+	userBalance, err := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	assert.NoError(suite.T(), err)
 	//assert the balance did not go below 0
 	assert.False(suite.T(), userBalance < 0)

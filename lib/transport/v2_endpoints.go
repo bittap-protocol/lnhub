@@ -1,8 +1,8 @@
 package transport
 
 import (
-	v2controllers "github.com/getAlby/lndhub.go/controllers_v2"
-	"github.com/getAlby/lndhub.go/lib/service"
+	v2controllers "github.com/bittap-protocol/lnhub/controllers_v2"
+	"github.com/bittap-protocol/lnhub/lib/service"
 	"github.com/labstack/echo/v4"
 )
 

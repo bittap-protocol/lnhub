@@ -10,7 +10,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/getAlby/lndhub.go/db/models"
+	"github.com/bittap-protocol/lnhub/db/models"
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/gommon/log"
 	"github.com/lightningnetwork/lnd/lnrpc"

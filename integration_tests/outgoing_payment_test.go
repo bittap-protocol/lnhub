@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"time"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/lib/responses"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/lib/responses"
 	"github.com/labstack/echo/v4"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/stretchr/testify/assert"
@@ -65,7 +65,7 @@ func (suite *PaymentTestSuite) TestOutGoingPayment() {
 
 	// check that balance was reduced
 	userId := getUserIdFromToken(suite.aliceToken)
-	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), userId)
+	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}
@@ -77,10 +77,10 @@ func (suite *PaymentTestSuite) TestOutGoingPayment() {
 		fmt.Printf("Error when getting transaction entries %v\n", err.Error())
 	}
 	// verify transaction entries data
-	feeAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeFees, userId)
-	incomingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeIncoming, userId)
-	outgoingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeOutgoing, userId)
-	currentAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeCurrent, userId)
+	feeAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeFees, common.BTC_ASSET_ID, userId)
+	incomingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeIncoming, common.BTC_ASSET_ID, userId)
+	outgoingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeOutgoing, common.BTC_ASSET_ID, userId)
+	currentAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeCurrent, common.BTC_ASSET_ID, userId)
 
 	outgoingInvoices, _ := suite.service.InvoicesFor(context.Background(), userId, common.InvoiceTypeOutgoing)
 	incomingInvoices, _ := suite.service.InvoicesFor(context.Background(), userId, common.InvoiceTypeIncoming)
@@ -178,7 +178,7 @@ func (suite *PaymentTestSuite) TestOutGoingPaymentWithNegativeBalance() {
 	// check that balance was reduced
 	userId := getUserIdFromToken(suite.aliceToken)
 
-	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), userId)
+	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}
@@ -191,10 +191,10 @@ func (suite *PaymentTestSuite) TestOutGoingPaymentWithNegativeBalance() {
 		fmt.Printf("Error when getting transaction entries %v\n", err.Error())
 	}
 	// verify transaction entries data
-	feeAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeFees, userId)
-	incomingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeIncoming, userId)
-	outgoingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeOutgoing, userId)
-	currentAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeCurrent, userId)
+	feeAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeFees, common.BTC_ASSET_ID, userId)
+	incomingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeIncoming, common.BTC_ASSET_ID, userId)
+	outgoingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeOutgoing, common.BTC_ASSET_ID, userId)
+	currentAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeCurrent, common.BTC_ASSET_ID, userId)
 
 	outgoingInvoices, _ := suite.service.InvoicesFor(context.Background(), userId, common.InvoiceTypeOutgoing)
 	incomingInvoices, _ := suite.service.InvoicesFor(context.Background(), userId, common.InvoiceTypeIncoming)

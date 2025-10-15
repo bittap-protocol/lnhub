@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/getAlby/lndhub.go/lib/service"
+	"github.com/bittap-protocol/lnhub/lib/service"
 	"github.com/labstack/echo/v4"
 )
 

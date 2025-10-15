@@ -18,6 +18,7 @@ type User struct {
 	UpdatedAt   bun.NullTime
 	Invoices    []*Invoice `bun:"rel:has-many,join:id=user_id"`
 	Accounts    []*Account `bun:"rel:has-many,join:id=user_id"`
+	Addresses   []*Address `bun:"rel:has-many,join:id=user_id"`
 	Deactivated bool
 	Deleted     bool
 }

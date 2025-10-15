@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/controllers"
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
-	"github.com/getAlby/lndhub.go/lib/tokens"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/controllers"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
+	"github.com/bittap-protocol/lnhub/lib/tokens"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/lightningnetwork/lnd/lnrpc"
@@ -133,10 +133,10 @@ func (suite *PaymentTestErrorsSuite) TestExternalFailingInvoice() {
 	userId := getUserIdFromToken(suite.userToken)
 
 	// verify transaction entries data
-	feeAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeFees, userId)
-	incomingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeIncoming, userId)
-	outgoingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeOutgoing, userId)
-	currentAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeCurrent, userId)
+	feeAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeFees, common.BTC_ASSET_ID, userId)
+	incomingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeIncoming, common.BTC_ASSET_ID, userId)
+	outgoingAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeOutgoing, common.BTC_ASSET_ID, userId)
+	currentAccount, _ := suite.service.AccountFor(context.Background(), common.AccountTypeCurrent, common.BTC_ASSET_ID, userId)
 
 	outgoingInvoices, err := invoicesFor(suite.service, userId, common.InvoiceTypeOutgoing)
 	if err != nil {
@@ -155,7 +155,7 @@ func (suite *PaymentTestErrorsSuite) TestExternalFailingInvoice() {
 		fmt.Printf("Error when getting transaction entries %v\n", err.Error())
 	}
 
-	userBalance, err := suite.service.CurrentUserBalance(context.Background(), userId)
+	userBalance, err := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}

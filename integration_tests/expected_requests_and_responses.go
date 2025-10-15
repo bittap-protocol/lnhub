@@ -1,8 +1,8 @@
 package integration_tests
 
 import (
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/service"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/service"
 )
 
 type ExpectedKeySendRequestBody struct {

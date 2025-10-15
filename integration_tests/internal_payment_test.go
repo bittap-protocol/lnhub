@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/controllers"
-	"github.com/getAlby/lndhub.go/lib"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
-	"github.com/getAlby/lndhub.go/lib/tokens"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/controllers"
+	"github.com/bittap-protocol/lnhub/lib"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
+	"github.com/bittap-protocol/lnhub/lib/tokens"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/lightningnetwork/lnd/lnrpc"
@@ -289,7 +289,7 @@ func (suite *PaymentTestSuite) TestOutgoingExceededChecks() {
 
 	suite.service.Config.MaxSendVolume = 100
 	suite.service.Config.MaxVolumePeriod = 2592000
-	//volume 
+	//volume
 	invoice, err = suite.externalLND.AddInvoice(context.Background(), &externalInvoice)
 	assert.NoError(suite.T(), err)
 	//pay external invoice
@@ -311,7 +311,7 @@ func (suite *PaymentTestSuite) TestOutgoingExceededChecks() {
 
 	// check if setting zero as send volume stops
 	suite.service.Config.MaxSendVolume = 0
-	//volume 
+	//volume
 	invoice, err = suite.externalLND.AddInvoice(context.Background(), &externalInvoice)
 	assert.NoError(suite.T(), err)
 	//pay external invoice
@@ -376,13 +376,13 @@ func (suite *PaymentTestSuite) TestInternalPayment() {
 	assert.Equal(suite.T(), http.StatusBadRequest, rec.Code)
 
 	transactionEntriesAlice, _ := suite.service.TransactionEntriesFor(context.Background(), aliceId)
-	aliceBalance, _ := suite.service.CurrentUserBalance(context.Background(), aliceId)
+	aliceBalance, _ := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, aliceId)
 	assert.Equal(suite.T(), 2, len(transactionEntriesAlice))
 	assert.Equal(suite.T(), int64(aliceFundingSats), transactionEntriesAlice[0].Amount)
 	assert.Equal(suite.T(), int64(bobSatRequested), transactionEntriesAlice[1].Amount)
 	assert.Equal(suite.T(), int64(aliceFundingSats-bobSatRequested-fee), aliceBalance)
 
-	bobBalance, _ := suite.service.CurrentUserBalance(context.Background(), bobId)
+	bobBalance, _ := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, bobId)
 	transactionEntriesBob, _ := suite.service.TransactionEntriesFor(context.Background(), bobId)
 	assert.Equal(suite.T(), 1, len(transactionEntriesBob))
 	assert.Equal(suite.T(), int64(bobSatRequested), transactionEntriesBob[0].Amount)
@@ -406,7 +406,7 @@ func (suite *PaymentTestSuite) TestInternalPayment() {
 	assert.Equal(suite.T(), http.StatusOK, rec.Code)
 	assert.NoError(suite.T(), json.NewDecoder(rec.Body).Decode(payInvoiceResponse))
 	//assert bob was credited the correct amount
-	bobBalance, _ = suite.service.CurrentUserBalance(context.Background(), bobId)
+	bobBalance, _ = suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, bobId)
 	assert.Equal(suite.T(), int64(bobSatRequested+toPayForZeroAmt), bobBalance)
 }
 
@@ -448,7 +448,7 @@ func (suite *PaymentTestSuite) TestInternalPaymentFail() {
 		fmt.Printf("Error when getting transaction entries %v\n", err.Error())
 	}
 
-	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), userId)
+	aliceBalance, err := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, userId)
 	if err != nil {
 		fmt.Printf("Error when getting balance %v\n", err.Error())
 	}
@@ -477,7 +477,7 @@ func (suite *PaymentTestSuite) TestInternalPaymentKeysend() {
 
 	//check bob's balance before payment
 	bobId := getUserIdFromToken(suite.bobToken)
-	previousBobBalance, _ := suite.service.CurrentUserBalance(context.Background(), bobId)
+	previousBobBalance, _ := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, bobId)
 
 	//pay bob from alice using a keysend payment
 	rec := httptest.NewRecorder()
@@ -499,7 +499,7 @@ func (suite *PaymentTestSuite) TestInternalPaymentKeysend() {
 	assert.NoError(suite.T(), json.NewDecoder(rec.Body).Decode(keySendResponse))
 
 	//check bob's balance after payment
-	bobBalance, _ := suite.service.CurrentUserBalance(context.Background(), bobId)
+	bobBalance, _ := suite.service.CurrentUserBalance(context.Background(), common.BTC_ASSET_ID, bobId)
 	assert.Equal(suite.T(), int64(bobAmt)+previousBobBalance, bobBalance)
 	//check bob's invoices for whatsat message
 	invoicesBob, _ := suite.service.InvoicesFor(context.Background(), bobId, common.InvoiceTypeIncoming)

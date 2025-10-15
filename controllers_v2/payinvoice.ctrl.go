@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/service"
-	"github.com/getAlby/lndhub.go/lnd"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/service"
+	"github.com/bittap-protocol/lnhub/lnd"
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
 	"github.com/labstack/echo/v4"
@@ -25,10 +25,12 @@ func NewPayInvoiceController(svc *service.LndhubService) *PayInvoiceController {
 
 type PayInvoiceRequestBody struct {
 	Invoice string `json:"invoice" validate:"required"`
+	AssetID string `json:"asset_id" validate:"omitempty,gte=1"` // NOTE: this is defaulting to bitcoin balance
 	Amount  int64  `json:"amount" validate:"omitempty,gte=0"`
 }
 type PayInvoiceResponseBody struct {
 	PaymentRequest  string `json:"payment_request,omitempty"`
+	AssetID         string `json:"asset_id,omitempty"`
 	Amount          int64  `json:"amount,omitempty"`
 	Fee             int64  `json:"fee"`
 	Description     string `json:"description,omitempty"`
@@ -98,7 +100,7 @@ func (controller *PayInvoiceController) PayInvoice(c echo.Context) error {
 		}
 		lnPayReq.PayReq.NumSatoshis = amt
 	}
-	resp, err := controller.svc.CheckOutgoingPaymentAllowed(c, lnPayReq, userID)
+	resp, err := controller.svc.CheckOutgoingPaymentAllowed(c, lnPayReq, reqBody.AssetID, userID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, responses.GeneralServerError)
 	}

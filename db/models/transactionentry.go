@@ -13,6 +13,11 @@ const (
 	EntryTypeServiceFeeReversal = "service_fee_reversal"
 	EntryTypeFeeReserveReversal = "fee_reserve_reversal"
 	EntryTypeOutgoingReversal   = "outgoing_reversal"
+
+	BroadcastStatePending   = "pending"
+	BroadcastStateBroadcast = "broadcast"
+	LnhubInternalOutpoint   = "lnhub_internal_outpoint"
+	LnhubInternalComplete   = "lnhub_internal_complete"
 )
 
 // TransactionEntry : Transaction Entries Model
@@ -24,6 +29,8 @@ type TransactionEntry struct {
 	Invoice         *Invoice          `bun:"rel:belongs-to,join:invoice_id=id"`
 	ParentID        int64             `bun:",nullzero"`
 	Parent          *TransactionEntry `bun:"rel:belongs-to"`
+	AssetID         string            `bun:",nullzero"`
+	Asset           *Asset            `bun:"rel:belongs-to,join:asset_id=asset_id"`
 	CreditAccountID int64             `bun:",notnull"`
 	FeeReserve      *TransactionEntry `bun:"rel:belongs-to"`
 	ServiceFee      *TransactionEntry `bun:"rel:belongs-to"`
@@ -33,4 +40,6 @@ type TransactionEntry struct {
 	Amount          int64             `bun:",notnull"`
 	CreatedAt       time.Time         `bun:",nullzero,notnull,default:current_timestamp"`
 	EntryType       string
+	Outpoint        string
+	BroadcastState  string
 }

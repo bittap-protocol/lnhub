@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/getAlby/lndhub.go/common"
-	"github.com/getAlby/lndhub.go/db/models"
-	"github.com/getAlby/lndhub.go/lnd"
+	"github.com/bittap-protocol/lnhub/common"
+	"github.com/bittap-protocol/lnhub/db/models"
+	"github.com/bittap-protocol/lnhub/lnd"
 	"github.com/getsentry/sentry-go"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/uptrace/bun"
@@ -109,13 +109,13 @@ func (svc *LndhubService) ProcessInvoiceUpdate(ctx context.Context, rawInvoice *
 	svc.Logger.Infof("Invoice update: invoice_id:%v settled:%v value:%v state:%v", invoice.ID, rawInvoice.Settled, rawInvoice.AmtPaidSat, rawInvoice.State)
 
 	// Get the user's current account for the transaction entry
-	creditAccount, err := svc.AccountFor(ctx, common.AccountTypeCurrent, invoice.UserID)
+	creditAccount, err := svc.AccountFor(ctx, common.AccountTypeCurrent, invoice.AssetID, invoice.UserID)
 	if err != nil {
 		svc.Logger.Errorf("Could not find current account user_id:%v invoice_id:%v", invoice.UserID, invoice.ID)
 		return err
 	}
 	// Get the user's incoming account for the transaction entry
-	debitAccount, err := svc.AccountFor(ctx, common.AccountTypeIncoming, invoice.UserID)
+	debitAccount, err := svc.AccountFor(ctx, common.AccountTypeIncoming, invoice.AssetID, invoice.UserID)
 	if err != nil {
 		svc.Logger.Errorf("Could not find incoming account user_id:%v invoice_id:%v", invoice.UserID, invoice.ID)
 		return err

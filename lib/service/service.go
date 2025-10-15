@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/getAlby/lndhub.go/rabbitmq"
+	"github.com/bittap-protocol/lnhub/rabbitmq"
 
-	"github.com/getAlby/lndhub.go/db/models"
-	"github.com/getAlby/lndhub.go/lib/responses"
-	"github.com/getAlby/lndhub.go/lib/tokens"
-	"github.com/getAlby/lndhub.go/lnd"
+	"github.com/bittap-protocol/lnhub/db/models"
+	"github.com/bittap-protocol/lnhub/lib/responses"
+	"github.com/bittap-protocol/lnhub/lib/tokens"
+	"github.com/bittap-protocol/lnhub/lnd"
+	"github.com/bittap-protocol/lnhub/tapd"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/random"
 	"github.com/uptrace/bun"
@@ -22,12 +23,14 @@ import (
 const alphaNumBytes = random.Alphanumeric
 
 type LndhubService struct {
-	Config         *Config
-	DB             *bun.DB
-	LndClient      lnd.LightningClientWrapper
-	RabbitMQClient rabbitmq.Client
-	Logger         *lecho.Logger
-	InvoicePubSub  *Pubsub
+	Config             *Config
+	DB                 *bun.DB
+	LndClient          lnd.LightningClientWrapper
+	TapdClient         tapd.TapdClientWrapper
+	RabbitMQClient     rabbitmq.Client
+	Logger             *lecho.Logger
+	InvoicePubSub      *Pubsub
+	TaprootAssetPubSub *TapdPubsub
 }
 
 func (svc *LndhubService) GenerateToken(ctx context.Context, login, password, inRefreshToken string) (accessToken, refreshToken string, err error) {
@@ -89,6 +92,16 @@ func (svc *LndhubService) ParseInt(value interface{}) (int64, error) {
 	default:
 		return 0, fmt.Errorf("conversion to int from %T not supported", v)
 	}
+}
+
+func (svc *LndhubService) OneAssetInMultiKeysend(arr []string) bool {
+	for i := 1; i < len(arr); i++ {
+		// compare every item to the first positioned item
+		if arr[i] != arr[0] {
+			return false
+		}
+	}
+	return true
 }
 
 func (svc *LndhubService) ValidateUserMiddleware() echo.MiddlewareFunc {

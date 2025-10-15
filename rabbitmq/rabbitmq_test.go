@@ -6,16 +6,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/getAlby/lndhub.go/db/models"
-	"github.com/getAlby/lndhub.go/rabbitmq"
-	"github.com/getAlby/lndhub.go/rabbitmq/mock_rabbitmq"
+	"github.com/bittap-protocol/lnhub/db/models"
+	"github.com/bittap-protocol/lnhub/rabbitmq"
+	"github.com/bittap-protocol/lnhub/rabbitmq/mock_rabbitmq"
 	"github.com/golang/mock/gomock"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/stretchr/testify/assert"
 )
 
-//go:generate mockgen -destination=./mock_rabbitmq/rabbitmq.go github.com/getAlby/lndhub.go/rabbitmq LndHubService,AMQPClient
+//go:generate mockgen -destination=./mock_rabbitmq/rabbitmq.go github.com/bittap-protocol/lnhub/rabbitmq LndHubService,AMQPClient
 
 func TestFinalizedInitializedPayments(t *testing.T) {
 	t.Parallel()
@@ -86,7 +86,6 @@ func TestFinalizedInitializedPayments(t *testing.T) {
 
 	ch <- amqp.Delivery{Body: successPayment}
 	ch <- amqp.Delivery{Body: failedPayment}
-
 
 	go func() {
 		err = client.FinalizeInitializedPayments(ctx, lndHubService)
