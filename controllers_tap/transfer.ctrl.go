@@ -33,13 +33,12 @@ type TransferResponseBody struct {
 // @Description  Transfer assets to an address
 // @Accept       json
 // @Produce      json
-// @Tags         Transfer
+// @Tags         Taproot Assets
 // @Param        address  body  string  true  "Address"
 // @Success      200      {object}  TransferResponseBody
 // @Failure      400      {object}  responses.ErrorResponse
 // @Failure      500      {object}  responses.ErrorResponse
-// @Router       /v2/transfer [post]
-
+// @Router       /tap/transfer [post]
 func (controller *TransferController) Transfer(c echo.Context) error {
 	userId := c.Get("UserID").(int64)
 	// payload is an event

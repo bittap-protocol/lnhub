@@ -25,11 +25,47 @@ definitions:
       message:
         type: string
     type: object
+  tapcontrollers.AddressResponseBody:
+    properties:
+      address:
+        type: string
+    type: object
+  tapcontrollers.BalanceResponse:
+    properties:
+      asset_id:
+        type: string
+      balance:
+        type: integer
+    type: object
+  tapcontrollers.BalancesResponse:
+    properties:
+      balances:
+        additionalProperties:
+          format: int64
+          type: integer
+        type: object
+    type: object
+  tapcontrollers.TransferResponseBody:
+    properties:
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  tapcontrollers.UniverseAssetsResponseBody:
+    properties:
+      assets:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
   v2controllers.AddInvoiceRequestBody:
     properties:
       amount:
         minimum: 0
         type: integer
+      asset_id:
+        type: string
       description:
         type: string
       description_hash:
@@ -37,6 +73,10 @@ definitions:
     type: object
   v2controllers.AddInvoiceResponseBody:
     properties:
+      asset_id:
+        type: string
+      created_at:
+        type: string
       expires_at:
         type: string
       payment_hash:
@@ -76,6 +116,7 @@ definitions:
       custom_records:
         additionalProperties:
           items:
+            format: int32
             type: integer
           type: array
         type: object
@@ -112,6 +153,8 @@ definitions:
     properties:
       amount:
         type: integer
+      asset_id:
+        type: string
       custom_records:
         additionalProperties:
           type: string
@@ -126,11 +169,14 @@ definitions:
         type: string
     required:
     - amount
+    - asset_id
     - destination
     type: object
   v2controllers.KeySendResponseBody:
     properties:
       amount:
+        type: integer
+      asset_id:
         type: integer
       custom_records:
         additionalProperties:
@@ -175,6 +221,10 @@ definitions:
       amount:
         minimum: 0
         type: integer
+      asset_id:
+        description: 'NOTE: this is defaulting to bitcoin balance'
+        minLength: 1
+        type: string
       invoice:
         type: string
     required:
@@ -184,6 +234,8 @@ definitions:
     properties:
       amount:
         type: integer
+      asset_id:
+        type: string
       description:
         type: string
       description_hash:
@@ -203,6 +255,8 @@ definitions:
     properties:
       deactivated:
         type: boolean
+      deleted:
+        type: boolean
       id:
         type: integer
       login:
@@ -216,6 +270,8 @@ definitions:
     properties:
       deactivated:
         type: boolean
+      deleted:
+        type: boolean
       id:
         type: integer
       login:
@@ -223,15 +279,14 @@ definitions:
     type: object
 info:
   contact:
-    email: hello@getalby.com
-    name: Alby
-    url: https://getalby.com
-  description: Accounting wrapper for the Lightning Network providing separate accounts
-    for end-users.
+    name: BitTap
+    url: https://bittap.org
+  description: Accounting wrapper for the Lightning Network to support Taproot Assets
+    and RGB.
   license:
     name: GNU GPLv3
     url: https://www.gnu.org/licenses/gpl-3.0.en.html
-  title: LndHub.go
+  title: LnHub
   version: 0.9.0
 paths:
   /auth:
@@ -263,6 +318,141 @@ paths:
       summary: Authenticate
       tags:
       - Account
+  /tap/balance/:asset_id:
+    get:
+      consumes:
+      - application/json
+      description: Current user's balance in satoshi
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tapcontrollers.BalanceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Retrieve balance
+      tags:
+      - Taproot Assets
+  /tap/balances/all:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all user balances
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tapcontrollers.BalancesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Retrieve all balances
+      tags:
+      - Taproot Assets
+  /tap/create-address:
+    post:
+      consumes:
+      - application/json
+      description: Get or create address for deposit
+      parameters:
+      - description: Asset ID
+        in: body
+        name: asset_id
+        required: true
+        schema:
+          type: string
+      - description: Amount
+        in: body
+        name: amt
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tapcontrollers.AddressResponseBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Get or create address
+      tags:
+      - Taproot Assets
+  /tap/transfer:
+    post:
+      consumes:
+      - application/json
+      description: Transfer assets to an address
+      parameters:
+      - description: Address
+        in: body
+        name: address
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tapcontrollers.TransferResponseBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Transfer assets
+      tags:
+      - Taproot Assets
+  /tap/universe-assets:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve universe assets
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tapcontrollers.UniverseAssetsResponseBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Retrieve universe assets
+      tags:
+      - Taproot Assets
   /v2/admin/users:
     put:
       consumes:

@@ -1,12 +1,11 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Accounting wrapper for the Lightning Network providing separate accounts for end-users.",
-        "title": "LndHub.go",
+        "description": "Accounting wrapper for the Lightning Network to support Taproot Assets and RGB.",
+        "title": "LnHub",
         "contact": {
-            "name": "Alby",
-            "url": "https://getalby.com",
-            "email": "hello@getalby.com"
+            "name": "BitTap",
+            "url": "https://bittap.org"
         },
         "license": {
             "name": "GNU GPLv3",
@@ -44,6 +43,212 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/controllers.AuthResponseBody"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tap/balance/:asset_id": {
+            "get": {
+                "description": "Current user's balance in satoshi",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Taproot Assets"
+                ],
+                "summary": "Retrieve balance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tapcontrollers.BalanceResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tap/balances/all": {
+            "get": {
+                "description": "Retrieve all user balances",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Taproot Assets"
+                ],
+                "summary": "Retrieve all balances",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tapcontrollers.BalancesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tap/create-address": {
+            "post": {
+                "description": "Get or create address for deposit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Taproot Assets"
+                ],
+                "summary": "Get or create address",
+                "parameters": [
+                    {
+                        "description": "Asset ID",
+                        "name": "asset_id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Amount",
+                        "name": "amt",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tapcontrollers.AddressResponseBody"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tap/transfer": {
+            "post": {
+                "description": "Transfer assets to an address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Taproot Assets"
+                ],
+                "summary": "Transfer assets",
+                "parameters": [
+                    {
+                        "description": "Address",
+                        "name": "address",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tapcontrollers.TransferResponseBody"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tap/universe-assets": {
+            "get": {
+                "description": "Retrieve universe assets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Taproot Assets"
+                ],
+                "summary": "Retrieve universe assets",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tapcontrollers.UniverseAssetsResponseBody"
                         }
                     },
                     "400": {
@@ -571,12 +776,68 @@
                 }
             }
         },
+        "tapcontrollers.AddressResponseBody": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                }
+            }
+        },
+        "tapcontrollers.BalanceResponse": {
+            "type": "object",
+            "properties": {
+                "asset_id": {
+                    "type": "string"
+                },
+                "balance": {
+                    "type": "integer"
+                }
+            }
+        },
+        "tapcontrollers.BalancesResponse": {
+            "type": "object",
+            "properties": {
+                "balances": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            }
+        },
+        "tapcontrollers.TransferResponseBody": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "tapcontrollers.UniverseAssetsResponseBody": {
+            "type": "object",
+            "properties": {
+                "assets": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "v2controllers.AddInvoiceRequestBody": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "integer",
                     "minimum": 0
+                },
+                "asset_id": {
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -589,6 +850,12 @@
         "v2controllers.AddInvoiceResponseBody": {
             "type": "object",
             "properties": {
+                "asset_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
                 "expires_at": {
                     "type": "string"
                 },
@@ -650,7 +917,8 @@
                     "additionalProperties": {
                         "type": "array",
                         "items": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "int32"
                         }
                     }
                 },
@@ -702,11 +970,15 @@
             "type": "object",
             "required": [
                 "amount",
+                "asset_id",
                 "destination"
             ],
             "properties": {
                 "amount": {
                     "type": "integer"
+                },
+                "asset_id": {
+                    "type": "string"
                 },
                 "customRecords": {
                     "type": "object",
@@ -732,6 +1004,9 @@
             "type": "object",
             "properties": {
                 "amount": {
+                    "type": "integer"
+                },
+                "asset_id": {
                     "type": "integer"
                 },
                 "custom_records": {
@@ -803,6 +1078,11 @@
                     "type": "integer",
                     "minimum": 0
                 },
+                "asset_id": {
+                    "description": "NOTE: this is defaulting to bitcoin balance",
+                    "type": "string",
+                    "minLength": 1
+                },
                 "invoice": {
                     "type": "string"
                 }
@@ -813,6 +1093,9 @@
             "properties": {
                 "amount": {
                     "type": "integer"
+                },
+                "asset_id": {
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -846,6 +1129,9 @@
                 "deactivated": {
                     "type": "boolean"
                 },
+                "deleted": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -861,6 +1147,9 @@
             "type": "object",
             "properties": {
                 "deactivated": {
+                    "type": "boolean"
+                },
+                "deleted": {
                     "type": "boolean"
                 },
                 "id": {

@@ -28,11 +28,11 @@ type UniverseAssetsResponseBody struct {
 // @Description  Retrieve universe assets
 // @Accept       json
 // @Produce      json
-// @Tags         Universe
+// @Tags         Taproot Assets
 // @Success      200  {object}  UniverseAssetsResponseBody
 // @Failure      400  {object}  responses.ErrorResponse
 // @Failure      500  {object}  responses.ErrorResponse
-// @Router       /v2/universe-assets [get]
+// @Router       /tap/universe-assets [get]
 func (controller *UniverseController) UniverseAssets(c echo.Context) error {
 	data, err := controller.svc.GetUniverseAssetsJson(c.Request().Context())
 	if err != nil {

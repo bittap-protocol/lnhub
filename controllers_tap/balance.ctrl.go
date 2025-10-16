@@ -34,12 +34,11 @@ type BalancesResponse struct {
 // @Description  Current user's balance in satoshi
 // @Accept       json
 // @Produce      json
-// @Tags         Account
+// @Tags         Taproot Assets
 // @Success      200  {object}  BalanceResponse
 // @Failure      400  {object}  responses.ErrorResponse
 // @Failure      500  {object}  responses.ErrorResponse
-// @Router       /v2/balance/:asset_id [get]
-
+// @Router       /tap/balance/:asset_id [get]
 func (controller *BalanceController) Balance(c echo.Context) error {
 	userId := c.Get("UserID").(int64)
 	assetParam := c.Param("asset_id")
@@ -64,16 +63,16 @@ func (controller *BalanceController) Balance(c echo.Context) error {
 	})
 }
 
-// / Balances godoc
-// / @Summary      Retrieve all balances
-// / @Description  Retrieve all user balances
-// / @Accept       json
-// / @Produce      json
-// / @Tags         Account
-// / @Success      200  {object}  BalancesResponse
-// / @Failure      400  {object}  responses.ErrorResponse
-// / @Failure      500  {object}  responses.ErrorResponse
-// / @Router       /v2/balances/all [get]
+// Balances godoc
+// @Summary      Retrieve all balances
+// @Description  Retrieve all user balances
+// @Accept       json
+// @Produce      json
+// @Tags         Taproot Assets
+// @Success      200  {object}  BalancesResponse
+// @Failure      400  {object}  responses.ErrorResponse
+// @Failure      500  {object}  responses.ErrorResponse
+// @Router       /tap/balances/all [get]
 func (controller *BalanceController) Balances(c echo.Context) error {
 	userId := c.Get("UserID").(int64)
 

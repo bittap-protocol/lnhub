@@ -30,22 +30,21 @@ import (
 	"github.com/uptrace/bun/migrate"
 )
 
-// @title        LndHub.go
-// @version      0.9.0
-// @description  Accounting wrapper for the Lightning Network providing separate accounts for end-users.
+//	@title			LnHub
+//	@version		0.9.0
+//	@description	Accounting wrapper for the Lightning Network to support Taproot Assets and RGB.
 
-// @contact.name   Alby
-// @contact.url    https://getalby.com
-// @contact.email  hello@getalby.com
+//	@contact.name	BitTap
+//	@contact.url	https://bittap.org
 
-// @license.name  GNU GPLv3
-// @license.url   https://www.gnu.org/licenses/gpl-3.0.en.html
+//	@license.name	GNU GPLv3
+//	@license.url	https://www.gnu.org/licenses/gpl-3.0.en.html
 
-// @BasePath  /
+//	@BasePath	/
 
-// @securitydefinitions.oauth2.password  OAuth2Password
-// @tokenUrl                             /auth
-// @schemes                              https http
+// @securitydefinitions.oauth2.password	OAuth2Password
+// @tokenUrl								/auth
+// @schemes								https http
 func main() {
 
 	c := &service.Config{}

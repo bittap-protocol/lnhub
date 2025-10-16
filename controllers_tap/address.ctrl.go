@@ -33,13 +33,13 @@ type AddressResponseBody struct {
 // @Description  Get or create address for deposit
 // @Accept       json
 // @Produce      json
-// @Tags         Address
+// @Tags         Taproot Assets
 // @Param        asset_id  body  string  true  "Asset ID"
 // @Param        amt       body  string  true  "Amount"
 // @Success      200      {object}  AddressResponseBody
 // @Failure      400      {object}  responses.ErrorResponse
 // @Failure      500      {object}  responses.ErrorResponse
-// @Router       /v2/create-address [post]
+// @Router       /tap/create-address [post]
 func (controller *AddressController) CreateAddress(c echo.Context) error {
 	userId := c.Get("UserID").(int64)
 
