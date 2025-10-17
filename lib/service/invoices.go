@@ -553,11 +553,12 @@ func (svc *LndhubService) HandleSuccessfulPayment(ctx context.Context, invoice *
 	return nil
 }
 
-func (svc *LndhubService) AddOutgoingInvoice(ctx context.Context, userID int64, paymentRequest string, lnPayReq *lnd.LNPayReq) (*models.Invoice, *responses.ErrorResponse) {
+func (svc *LndhubService) AddOutgoingInvoice(ctx context.Context, userID int64, assetId string, paymentRequest string, lnPayReq *lnd.LNPayReq) (*models.Invoice, *responses.ErrorResponse) {
 	// Initialize new DB invoice
 	invoice := models.Invoice{
 		Type:                 common.InvoiceTypeOutgoing,
 		UserID:               userID,
+		AssetID:              assetId,
 		PaymentRequest:       paymentRequest,
 		RHash:                lnPayReq.PayReq.PaymentHash,
 		Amount:               lnPayReq.PayReq.NumSatoshis,
@@ -591,7 +592,7 @@ func (svc *LndhubService) AddOutgoingInvoice(ctx context.Context, userID int64, 
 	return &invoice, nil
 }
 
-func (svc *LndhubService) AddIncomingInvoice(ctx context.Context, userID int64, amount int64, memo, descriptionHashStr string) (*models.Invoice, *responses.ErrorResponse) {
+func (svc *LndhubService) AddIncomingInvoice(ctx context.Context, userID int64, assetId string, amount int64, memo, descriptionHashStr string) (*models.Invoice, *responses.ErrorResponse) {
 	preimage, err := makePreimageHex()
 	if err != nil {
 		return nil, &responses.GeneralServerError
@@ -601,6 +602,7 @@ func (svc *LndhubService) AddIncomingInvoice(ctx context.Context, userID int64, 
 	invoice := models.Invoice{
 		Type:            common.InvoiceTypeIncoming,
 		UserID:          userID,
+		AssetID:         assetId,
 		Amount:          amount,
 		Memo:            memo,
 		DescriptionHash: descriptionHashStr,
@@ -611,11 +613,13 @@ func (svc *LndhubService) AddIncomingInvoice(ctx context.Context, userID int64, 
 	// Save invoice - we save the invoice early to have a record in case the LN call fails
 	_, err = svc.DB.NewInsert().Model(&invoice).Exec(ctx)
 	if err != nil {
+		svc.Logger.Errorf("Error adding incoming invoice: user_id:%v error: %v", userID, err)
 		return nil, &responses.GeneralServerError
 	}
 
 	descriptionHash, err := hex.DecodeString(descriptionHashStr)
 	if err != nil {
+		svc.Logger.Errorf("Error adding incoming invoice: user_id:%v error: %v", userID, err)
 		return nil, &responses.GeneralServerError
 	}
 	// Initialize lnrpc invoice
@@ -629,7 +633,7 @@ func (svc *LndhubService) AddIncomingInvoice(ctx context.Context, userID int64, 
 	// Call LND
 	lnInvoiceResult, err := svc.LndClient.AddInvoice(ctx, &lnInvoice)
 	if err != nil {
-		svc.Logger.Errorf("Error creating invoice: user_id:%v error: %v", userID, err)
+		svc.Logger.Errorf("Error adding incoming invoice: user_id:%v error: %v", userID, err)
 		return nil, &responses.GeneralServerError
 	}
 
@@ -643,6 +647,7 @@ func (svc *LndhubService) AddIncomingInvoice(ctx context.Context, userID int64, 
 
 	_, err = svc.DB.NewUpdate().Model(&invoice).WherePK().Exec(ctx)
 	if err != nil {
+		svc.Logger.Errorf("Error adding incoming invoice: user_id:%v error: %v", userID, err)
 		return nil, &responses.GeneralServerError
 	}
 

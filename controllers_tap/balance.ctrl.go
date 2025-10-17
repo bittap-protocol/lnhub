@@ -39,6 +39,7 @@ type BalancesResponse struct {
 // @Failure      400  {object}  responses.ErrorResponse
 // @Failure      500  {object}  responses.ErrorResponse
 // @Router       /tap/balance/:asset_id [get]
+// @Security     OAuth2Password
 func (controller *BalanceController) Balance(c echo.Context) error {
 	userId := c.Get("UserID").(int64)
 	assetParam := c.Param("asset_id")
@@ -73,6 +74,7 @@ func (controller *BalanceController) Balance(c echo.Context) error {
 // @Failure      400  {object}  responses.ErrorResponse
 // @Failure      500  {object}  responses.ErrorResponse
 // @Router       /tap/balances/all [get]
+// @Security     OAuth2Password
 func (controller *BalanceController) Balances(c echo.Context) error {
 	userId := c.Get("UserID").(int64)
 

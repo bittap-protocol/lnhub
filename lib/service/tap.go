@@ -329,5 +329,5 @@ func (svc *LndhubService) FetchOrCreateAssetAddr(ctx context.Context, userId uin
 	if err == nil {
 		return newAddr.Encoded, nil
 	}
-	return "error: failed to create or fetch address.", nil
+	return "error: failed to create or fetch address.", err
 }

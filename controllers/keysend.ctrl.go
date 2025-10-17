@@ -83,7 +83,7 @@ func (controller *KeySendController) KeySend(c echo.Context) error {
 		c.Logger().Errorf("Error: %v user_id:%v amount:%v", resp.Message, userID, lnPayReq.PayReq.NumSatoshis)
 		return c.JSON(resp.HttpStatusCode, resp)
 	}
-	invoice, errResp := controller.svc.AddOutgoingInvoice(c.Request().Context(), userID, "", lnPayReq)
+	invoice, errResp := controller.svc.AddOutgoingInvoice(c.Request().Context(), userID, common.BTC_ASSET_ID, "", lnPayReq)
 	if errResp != nil {
 		return c.JSON(errResp.HttpStatusCode, errResp)
 	}

@@ -39,6 +39,7 @@ type TransferResponseBody struct {
 // @Failure      400      {object}  responses.ErrorResponse
 // @Failure      500      {object}  responses.ErrorResponse
 // @Router       /tap/transfer [post]
+// @Security     OAuth2Password
 func (controller *TransferController) Transfer(c echo.Context) error {
 	userId := c.Get("UserID").(int64)
 	// payload is an event

@@ -216,7 +216,7 @@ func (controller *KeySendController) SingleKeySend(ctx context.Context, reqBody 
 			HttpStatusCode: 400,
 		}
 	}
-	invoice, errResp := controller.svc.AddOutgoingInvoice(ctx, userID, "", lnPayReq)
+	invoice, errResp := controller.svc.AddOutgoingInvoice(ctx, userID, reqBody.AssetID, "", lnPayReq)
 	if errResp != nil {
 		return nil, errResp
 	}

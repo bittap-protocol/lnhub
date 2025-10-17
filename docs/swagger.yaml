@@ -338,6 +338,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
+      security:
+      - OAuth2Password: []
       summary: Retrieve balance
       tags:
       - Taproot Assets
@@ -361,6 +363,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
+      security:
+      - OAuth2Password: []
       summary: Retrieve all balances
       tags:
       - Taproot Assets
@@ -397,6 +401,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
+      security:
+      - OAuth2Password: []
       summary: Get or create address
       tags:
       - Taproot Assets
@@ -427,6 +433,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
+      security:
+      - OAuth2Password: []
       summary: Transfer assets
       tags:
       - Taproot Assets

@@ -35,7 +35,7 @@ type SubscribeSendAssetEventWrapper interface {
 func InitTAPDClient(c *TapdConfig, logger *lecho.Logger, ctx context.Context) (TapdClientWrapper, error) {
 	client, err := NewTAPDClient(TAPDOptions{
 		Address:      c.TAPDAddress,
-		MacaroonFile: c.TAPDAddress,
+		MacaroonFile: c.TAPDMacaroonFile,
 		MacaroonHex:  c.TAPDMacaroonHex,
 		CertFile:     c.TAPDCertFile,
 		CertHex:      c.TAPDCertHex,

@@ -108,7 +108,7 @@ func (controller *PayInvoiceController) PayInvoice(c echo.Context) error {
 		c.Logger().Errorf("Error: %v user_id:%v amount:%v", resp.Message, userID, lnPayReq.PayReq.NumSatoshis)
 		return c.JSON(resp.HttpStatusCode, resp)
 	}
-	invoice, errResp := controller.svc.AddOutgoingInvoice(c.Request().Context(), userID, paymentRequest, lnPayReq)
+	invoice, errResp := controller.svc.AddOutgoingInvoice(c.Request().Context(), userID, reqBody.AssetID, paymentRequest, lnPayReq)
 	if errResp != nil {
 		return c.JSON(errResp.HttpStatusCode, errResp)
 	}

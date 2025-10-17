@@ -65,7 +65,7 @@ func (svc *LndhubService) CreateUser(ctx context.Context, login string, password
 			common.AccountTypeFees,
 		}
 		for _, accountType := range accountTypes {
-			account := models.Account{UserID: user.ID, Type: accountType}
+			account := models.Account{UserID: user.ID, Type: accountType, AssetID: common.BTC_ASSET_ID}
 			if _, err := tx.NewInsert().Model(&account).Exec(ctx); err != nil {
 				return err
 			}

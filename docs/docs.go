@@ -69,6 +69,11 @@ const docTemplate = `{
         },
         "/tap/balance/:asset_id": {
             "get": {
+                "security": [
+                    {
+                        "OAuth2Password": []
+                    }
+                ],
                 "description": "Current user's balance in satoshi",
                 "consumes": [
                     "application/json"
@@ -104,6 +109,11 @@ const docTemplate = `{
         },
         "/tap/balances/all": {
             "get": {
+                "security": [
+                    {
+                        "OAuth2Password": []
+                    }
+                ],
                 "description": "Retrieve all user balances",
                 "consumes": [
                     "application/json"
@@ -139,6 +149,11 @@ const docTemplate = `{
         },
         "/tap/create-address": {
             "post": {
+                "security": [
+                    {
+                        "OAuth2Password": []
+                    }
+                ],
                 "description": "Get or create address for deposit",
                 "consumes": [
                     "application/json"
@@ -194,6 +209,11 @@ const docTemplate = `{
         },
         "/tap/transfer": {
             "post": {
+                "security": [
+                    {
+                        "OAuth2Password": []
+                    }
+                ],
                 "description": "Transfer assets to an address",
                 "consumes": [
                     "application/json"

@@ -60,17 +60,25 @@ func init() {
 		assetIds := []string{}
 		// iterate over universe assets
 		for _, root := range res.UniverseRoots {
-			// get asset stats, to avoid group ID use in ID spot on GetUniverseAssets
-			req := universerpc.AssetStatsQuery{
-				AssetNameFilter: root.AssetName,
+			/*
+				// get asset stats, to avoid group ID use in ID spot on GetUniverseAssets
+				req := universerpc.AssetStatsQuery{
+					AssetNameFilter: root.AssetName,
+				}
+				assetStats, err := tapdClient.GetAssetStats(ctx, &req)
+				// check for error or non-specifc filter on asset name
+				if err != nil {
+					return err
+				}
+				assetIdBytes := assetStats.AssetStats[0].GroupAnchor.AssetId
+				decodedAssetId := hex.EncodeToString(assetIdBytes)
+			*/
+			assetIdBytes := root.Id.GetAssetId()
+			if assetIdBytes == nil {
+				assetIdBytes = root.Id.GetGroupKey()
 			}
-			assetStats, err := tapdClient.GetAssetStats(ctx, &req)
-			// check for error or non-specifc filter on asset name
-			if err != nil {
-				return err
-			}
-			assetIdBytes := assetStats.AssetStats[0].GroupAnchor.AssetId
 			decodedAssetId := hex.EncodeToString(assetIdBytes)
+
 			// check for duplicate asset
 			if !slices.Contains(assetIds, decodedAssetId) {
 				// populate asset model

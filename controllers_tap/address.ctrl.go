@@ -40,6 +40,7 @@ type AddressResponseBody struct {
 // @Failure      400      {object}  responses.ErrorResponse
 // @Failure      500      {object}  responses.ErrorResponse
 // @Router       /tap/create-address [post]
+// @Security     OAuth2Password
 func (controller *AddressController) CreateAddress(c echo.Context) error {
 	userId := c.Get("UserID").(int64)
 

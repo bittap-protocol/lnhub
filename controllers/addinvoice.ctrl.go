@@ -73,7 +73,7 @@ func AddInvoice(c echo.Context, svc *service.LndhubService, userID int64) error 
 
 	c.Logger().Infof("Adding invoice: user_id:%v memo:%s value:%v description_hash:%s", userID, body.Memo, amount, body.DescriptionHash)
 
-	invoice, errResp := svc.AddIncomingInvoice(c.Request().Context(), userID, amount, body.Memo, body.DescriptionHash)
+	invoice, errResp := svc.AddIncomingInvoice(c.Request().Context(), userID, common.BTC_ASSET_ID, amount, body.Memo, body.DescriptionHash)
 	if errResp != nil {
 		return c.JSON(errResp.HttpStatusCode, errResp)
 	}

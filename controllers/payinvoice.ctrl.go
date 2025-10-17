@@ -100,7 +100,7 @@ func (controller *PayInvoiceController) PayInvoice(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, resp)
 	}
 
-	invoice, errResp := controller.svc.AddOutgoingInvoice(c.Request().Context(), userID, paymentRequest, lnPayReq)
+	invoice, errResp := controller.svc.AddOutgoingInvoice(c.Request().Context(), userID, common.BTC_ASSET_ID, paymentRequest, lnPayReq)
 	if errResp != nil {
 		return c.JSON(errResp.HttpStatusCode, errResp)
 	}
